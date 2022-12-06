@@ -4,7 +4,7 @@ white_mask=np.ones((200, 200), dtype=float)
 
 # Identify pixels above the threshold
 # Threshold of RGB > 160 does a nice job of identifying ground pixels only
-def color_thresh(img, above_thresh,below_thresh):
+def color_thresh(img, above_thresh,below_thresh=(600,600,600)):
     # Create an array of zeros same xy size as img, but single channel
     color_select = np.zeros_like(img[:,:,0])
     # Require that each pixel be above all three threshold values in RGB
@@ -21,7 +21,7 @@ def color_thresh(img, above_thresh,below_thresh):
                 & (img[:,:,1] > below_thresh[1]) \
                 & (img[:,:,2] > below_thresh[2])
     # Index the array of zeros with the boolean array and set to 1
-    color_select[below_thresh_result] = 0
+    color_select[below_thresh_result] = 0   
 
     
     # Return the binary image
@@ -135,7 +135,7 @@ def perception_step(Rover):
         # Example: Rover.worldmap[obstacle_y_world, obstacle_x_world, 0] += 1
         #          Rover.worldmap[rock_y_world, rock_x_world, 1] += 1
         #          Rover.worldmap[navigable_y_world, navigable_x_world, 2] += 1
-    Rover.worldmap[navigable_y_world, navigable_x_world, 2] += 10
+    Rover.worldmap[navigable_y_world, navigable_x_world, 2] += 50 #byzwd weight of blue 3ashan yban aktr l2n el background akhdr f el blue yzeed w yghaty 3ala akhdar
     # 8) Convert rover-centric pixel positions to polar coordinates
     # Update Rover pixel distances and angles
         # Rover.nav_dists = rover_centric_pixel_distances
