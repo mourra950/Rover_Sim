@@ -4,17 +4,26 @@ white_mask=np.ones((200, 200), dtype=float)
 
 # Identify pixels above the threshold
 # Threshold of RGB > 160 does a nice job of identifying ground pixels only
-def color_thresh(img, rgb_thresh):
+def color_thresh(img, above_thresh,below_thresh):
     # Create an array of zeros same xy size as img, but single channel
     color_select = np.zeros_like(img[:,:,0])
     # Require that each pixel be above all three threshold values in RGB
     # above_thresh will now contain a boolean array with "True"
     # where threshold was met
-    above_thresh = (img[:,:,0] > rgb_thresh[0]) \
-                & (img[:,:,1] > rgb_thresh[1]) \
-                & (img[:,:,2] > rgb_thresh[2])
+    above_thresh_result = (img[:,:,0] > above_thresh[0]) \
+                & (img[:,:,1] > above_thresh[1]) \
+                & (img[:,:,2] > above_thresh[2])
     # Index the array of zeros with the boolean array and set to 1
-    color_select[above_thresh] = 1
+    color_select[above_thresh_result] = 1
+
+  
+    below_thresh_result = (img[:,:,0] > below_thresh[0]) \
+                & (img[:,:,1] > below_thresh[1]) \
+                & (img[:,:,2] > below_thresh[2])
+    # Index the array of zeros with the boolean array and set to 1
+    color_select[below_thresh_result] = 0
+
+    
     # Return the binary image
     return color_select
 
@@ -108,7 +117,7 @@ def perception_step(Rover):
     terrain_img=color_thresh(warped,Terrain_threshold)
     # clip the far away results as they are not as accurate as i need
 
-    #obstacle_img=color_thresh(warped,obstacle_threshold)
+    
     #Rock_threshold=(161, 133, 0)
     # 4) Update Rover.vision_image (this will be displayed on left side of screen)
         # Example: Rover.vision_image[:,:,0] = obstacle color-thresholded binary image
