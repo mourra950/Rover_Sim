@@ -101,10 +101,10 @@ def perception_step(Rover):
     # 2) Apply perspective transform
     
     warped = perspect_transform(image, source, destination)
-    #warped[0:90]=0
+    warped[0:80]=0
     # 3) Apply color threshold to identify navigable terrain/obstacles/rock samples
     #this values derived using the picker tool in photoshop to get the lowest dark color in accepted images
-    Terrain_threshold=(150, 150, 150)
+    Terrain_threshold=(120, 120, 120)
     terrain_img=color_thresh(warped,Terrain_threshold)
     # clip the far away results as they are not as accurate as i need
 
