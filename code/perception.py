@@ -126,7 +126,10 @@ def perception_step(Rover):
     
     # 1) Define source and destination points for perspective transform
     #numbers are approximated from a test image with grid
-    source = np.float32([[14, 140], [301 ,140],[200, 96], [118, 96]])
+    source = np.float32([[14, 140],
+                     [300, 140],
+                     [200, 95],
+                     [120, 95]])
     destination = np.float32([[image.shape[1]/2 - dst_size, image.shape[0] - bottom_offset],
                 [image.shape[1]/2 + dst_size, image.shape[0] - bottom_offset],
                 [image.shape[1]/2 + dst_size, image.shape[0] - 2*dst_size - bottom_offset], 
@@ -145,19 +148,20 @@ def perception_step(Rover):
 
     # 3) Apply color threshold to identify navigable terrain/obstacles/rock samples
     #this values derived using the picker tool in photoshop to get the lowest dark color in accepted images
-    Terrain_threshold=(120, 120, 120)
-    Rock_threshhold1=(150,150,150)
-    Rock_threshhold=(80,80,80)
+    Terrain_threshold=(150, 150, 150)
+    Rock_threshhold=(110,110,-1)
+    Rock_threshhold1=(-1,-1,50)
     
     #color threshold for all terrain and rocks
     ###################################################
     terrain_img=color_thresh(warped,Terrain_threshold)
-    threshed1 = color_thresh1(image,Rock_threshhold1)
-    threshed = color_thresh(image,Rock_threshhold)
+    #threshed1 = color_thresh1(image,Rock_threshhold1)
+    #threshed = color_thresh(image,Rock_threshhold)
     ###################################################
     #to get rock
-    threshed_rock = threshed1-threshed
-    threshed_rock=scipy.ndimage.binary_erosion(threshed_rock, structure=np.ones((3,3))).astype(threshed_rock.dtype)
+    #threshed_rock = threshed1-threshed
+    #threshed_rock=scipy.ndimage.binary_erosion(threshed_rock, structure=np.ones((3,3))).astype(threshed_rock.dtype)
+    threshed_rock =color_thresh(image,Rock_threshhold,Rock_threshhold1)
     # clip the far away results as they are not as accurate as i need
     #################################################
     #obstacle 
@@ -168,7 +172,7 @@ def perception_step(Rover):
     obstacle = cv2.bitwise_and(warped_white_threshed,not_terrain)#filter applying the image with the filter
     #obstacle[0:80]= 0
     #######################################################################
-    terrain_img[0:clipping_num]=0
+    #terrain_img[0:clipping_num]=0
     obstacle[0:clipping_num]= 0
     threshed_rock[0:clipping_num]=0
     # 4) Update Rover.vision_image (this will be displayed on left side of screen)
