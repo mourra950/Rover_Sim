@@ -27,31 +27,6 @@ def color_thresh(img, above_thresh,below_thresh=(600,600,600)):
     
     # Return the binary image
     return color_select
-
-
-
-def color_thresh1(img, above_thresh,below_thresh=(600,600,600)):
-    # Create an array of zeros same xy size as img, but single channel
-    color_select = np.zeros_like(img[:,:,0])
-    # Require that each pixel be above all three threshold values in RGB
-    # above_thresh will now contain a boolean array with "True"
-    # where threshold was met
-    above_thresh_result = (img[:,:,0] > above_thresh[0]) \
-                & (img[:,:,1] > above_thresh[1]) \
-                #& (img[:,:,2] > above_thresh[2])
-    # Index the array of zeros with the boolean array and set to 1
-    color_select[above_thresh_result] = 1
-
-  
-    below_thresh_result = (img[:,:,0] > below_thresh[0]) \
-                & (img[:,:,1] > below_thresh[1]) \
-                & (img[:,:,2] > below_thresh[2])
-    # Index the array of zeros with the boolean array and set to 1
-    color_select[below_thresh_result] = 0 
-     # Return the binary image
-    return color_select
-    
-    
     
 # Define a function to convert from image coords to rover coords
 def rover_coords(binary_img):
@@ -149,8 +124,8 @@ def perception_step(Rover):
     # 3) Apply color threshold to identify navigable terrain/obstacles/rock samples
     #this values derived using the picker tool in photoshop to get the lowest dark color in accepted images
     Terrain_threshold=(150, 150, 150)
-    Rock_threshhold=(110,110,-1)
-    Rock_threshhold1=(-1,-1,50)
+    Rock_threshhold=(120,120,-1)
+    Rock_threshhold1=(-1,-1,60)
     
     #color threshold for all terrain and rocks
     ###################################################
@@ -172,7 +147,7 @@ def perception_step(Rover):
     obstacle = cv2.bitwise_and(warped_white_threshed,not_terrain)#filter applying the image with the filter
     #obstacle[0:80]= 0
     #######################################################################
-    #terrain_img[0:clipping_num]=0
+    terrain_img[0:clipping_num]=0
     obstacle[0:clipping_num]= 0
     threshed_rock[0:clipping_num]=0
     # 4) Update Rover.vision_image (this will be displayed on left side of screen)
