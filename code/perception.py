@@ -116,6 +116,12 @@ def perception_step(Rover):
     
     warped = perspect_transform(image, source, destination)
     
+    #Semi-circular mask for clipping terrain/obstacle image
+    
+    blank = np.zeros_like(warped)
+    circle = cv2.circle(blank.copy(),(warped.shape[1]//2,(warped.shape[1]//2 +75)),120,(255,255,255),-1)
+
+    circle = color_thresh(circle,(254,254,254))
     
 
     # 3) Apply color threshold to identify navigable terrain/obstacles/rock samples
@@ -144,17 +150,24 @@ def perception_step(Rover):
     obstacle = cv2.bitwise_and(warped_white_threshed,not_terrain)#applying the mask to the inverted image
     #obstacle[0:80]= 0
     #######################################################################
-    terrain_img[0:clipping_num]=0
-    obstacle[0:clipping_num]= 0
+
+    #Better than linear clipping and more realistic
+    terrain_img = cv2.bitwise_and(terrain_img,circle)
+    obstacle = cv2.bitwise_and(obstacle,circle)
+
+    #Linear clipping
+    # terrain_img[0:clipping_num]=0
+    # obstacle[0:clipping_num]= 0
+
     #threshed_rock[0:clipping_num]=0
     # 4) Update Rover.vision_image (this will be displayed on left side of screen)
         # Example: Rover.vision_image[:,:,0] = obstacle color-thresholded binary image
         #          Rover.vision_image[:,:,1] = rock_sample color-thresholded binary image
         #          Rover.vision_image[:,:,2] = navigable terrain color-thresholded binary image
-    if(Rover.roll< 0.1 or Rover.roll >359.9 )and (Rover.pitch <0.1 or Rover.pitch >359.9) :
-        Rover.vision_image[:,:,0] = obstacle*255
-        Rover.vision_image[:,:,1] = threshed_rock*255
-        Rover.vision_image[:,:,2] = terrain_img*255
+    
+    Rover.vision_image[:,:,0] = obstacle*255
+    Rover.vision_image[:,:,1] = threshed_rock*255
+    Rover.vision_image[:,:,2] = terrain_img*255
      
     # 5) Convert map image pixel values to rover-centric coords
     x_pixel_rover, y_pixel_rover=rover_coords(terrain_img)  #terrain rover
@@ -168,10 +181,10 @@ def perception_step(Rover):
         # Example: Rover.worldmap[obstacle_y_world, obstacle_x_world, 0] += 1
         #          Rover.worldmap[rock_y_world, rock_x_world, 1] += 1
         #          Rover.worldmap[navigable_y_world, navigable_x_world, 2] += 1
-    if(Rover.roll< 0.1 or Rover.roll >359.9 )and (Rover.pitch <0.1 or Rover.pitch >359.9) :
-        Rover.worldmap[obstacle_navigable_y_world, obstacle_x_world, 0] += 50
-        Rover.worldmap[rock_y_world, rock_x_world, 1] += 50
-        Rover.worldmap[navigable_y_world, navigable_x_world, 2] += 50 
+    # if(Rover.roll< 0.1 or Rover.roll >359.9 )and (Rover.pitch <0.1 or Rover.pitch >359.9) :
+    Rover.worldmap[obstacle_navigable_y_world, obstacle_x_world, 0] += 50
+    Rover.worldmap[rock_y_world, rock_x_world, 1] += 50
+    Rover.worldmap[navigable_y_world, navigable_x_world, 2] += 50 
     #byzwd weight of blue 3ashan yban aktr l2n el background akhdr f el blue yzeed w yghaty 3ala akhdar
     
     # 8) Convert rover-centric pixel positions to polar coordinates
@@ -181,9 +194,9 @@ def perception_step(Rover):
     dist, angles=to_polar_coords(x_pixel_rover, y_pixel_rover)
     dist_rock,angles_rock=to_polar_coords(x_pixel_rock,y_pixel_rock)
     
-    if(len(angles_rock)>5):
-        angles=angles_rock
-        dist=dist_rock
+    # if(len(angles_rock)>5):
+    #     angles=angles_rock
+    #     dist=dist_rock
     Rover.nav_dists = dist
     Rover.nav_angles= angles
 
