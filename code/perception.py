@@ -146,7 +146,7 @@ def perception_step(Rover):
     #######################################################################
     terrain_img[0:clipping_num]=0
     obstacle[0:clipping_num]= 0
-    threshed_rock[0:clipping_num]=0
+    #threshed_rock[0:clipping_num]=0
     # 4) Update Rover.vision_image (this will be displayed on left side of screen)
         # Example: Rover.vision_image[:,:,0] = obstacle color-thresholded binary image
         #          Rover.vision_image[:,:,1] = rock_sample color-thresholded binary image
@@ -179,11 +179,14 @@ def perception_step(Rover):
         # Rover.nav_dists = rover_centric_pixel_distances
         # Rover.nav_angles = rover_centric_angles
     dist, angles=to_polar_coords(x_pixel_rover, y_pixel_rover)
+    dist_rock,angles_rock=to_polar_coords(x_pixel_rock,y_pixel_rock)
     
+    if(len(angles_rock)>5):
+        angles=angles_rock
+        dist=dist_rock
     Rover.nav_dists = dist
     Rover.nav_angles= angles
-    
- 
+
     
     
     return Rover
