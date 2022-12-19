@@ -139,7 +139,7 @@ def perception_step(Rover):
     #to get rock
     #threshed_rock = threshed1-threshed
     #threshed_rock=scipy.ndimage.binary_erosion(threshed_rock, structure=np.ones((3,3))).astype(threshed_rock.dtype)
-    threshed_rock =color_thresh(image,Rock_threshhold,Rock_threshhold1)
+    threshed_rock =color_thresh(warped,Rock_threshhold,Rock_threshhold1)
     # clip the far away results as they are not as accurate as i need
     #################################################
     #obstacle 
@@ -194,9 +194,10 @@ def perception_step(Rover):
     dist, angles=to_polar_coords(x_pixel_rover, y_pixel_rover)
     dist_rock,angles_rock=to_polar_coords(x_pixel_rock,y_pixel_rock)
     
-    # if(len(angles_rock)>5):
-    #     angles=angles_rock
-    #     dist=dist_rock
+    if(len(angles_rock)>5):
+         angles=angles_rock
+         dist=dist_rock
+         Rover.near_sample=1
     Rover.nav_dists = dist
     Rover.nav_angles= angles
 
