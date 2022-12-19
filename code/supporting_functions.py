@@ -15,7 +15,6 @@ def convert_to_float(string_to_convert):
         float_value = np.float(string_to_convert)
     return float_value
 
-
 def update_rover(Rover, data):
     # Initialize start time and sample positions
     if Rover.start_time == None:
