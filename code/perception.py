@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 import scipy
 white_mask=np.ones((200, 200), dtype=float)
-clipping_num=80
+clipping_num=100
 # Identify pixels above the threshold
 # Threshold of RGB > 160 does a nice job of identifying ground pixels only
 def color_thresh(img, above_thresh,below_thresh=(600,600,600)):
@@ -21,7 +21,7 @@ def color_thresh(img, above_thresh,below_thresh=(600,600,600)):
     below_thresh_result = (img[:,:,0] > below_thresh[0]) \
                 & (img[:,:,1] > below_thresh[1]) \
                 & (img[:,:,2] > below_thresh[2])
-    # Index the array of zeros with the boolean array and set to 1
+    # Index the array of zeros with the boolean array and set to 0
     color_select[below_thresh_result] = 0   
 
     
@@ -92,7 +92,6 @@ def perspect_transform(img, src, dst):
 # Apply the above functions in succession and update the Rover state accordingly
 def perception_step(Rover):
     #Init some variable that will be used during the perception step
-    Rover.samples_to_find=0
     dst_size= 5
     bottom_offset= 6
     image= Rover.img
@@ -135,14 +134,14 @@ def perception_step(Rover):
     #threshed_rock = threshed1-threshed
     #threshed_rock=scipy.ndimage.binary_erosion(threshed_rock, structure=np.ones((3,3))).astype(threshed_rock.dtype)
     threshed_rock =color_thresh(image,Rock_threshhold,Rock_threshhold1)
-    # clip the far away results as they are not as accurate as I need
+    # clip the far away results as they are not as accurate as i need
     #################################################
     #obstacle 
     white = cv2.bitwise_not(np.zeros_like(image)) #white image 
-    warped_white = perspect_transform(white, source, destination)# warping =filter beta3na
+    warped_white = perspect_transform(white, source, destination)# warping our mask 
     warped_white_threshed = color_thresh(warped_white,(1,1,1))#thresholding not needed
-    not_terrain = cv2.bitwise_not(terrain_img) #invert lel image beta3t el terrain
-    obstacle = cv2.bitwise_and(warped_white_threshed,not_terrain)#filter applying the image with the filter
+    not_terrain = cv2.bitwise_not(terrain_img) #invert the terrain image
+    obstacle = cv2.bitwise_and(warped_white_threshed,not_terrain)#applying the mask to the inverted image
     #obstacle[0:80]= 0
     #######################################################################
     terrain_img[0:clipping_num]=0
@@ -162,17 +161,16 @@ def perception_step(Rover):
     x_pixel_obstacle,y_pixel_obstacle = rover_coords(obstacle) #obstacle rover
     x_pixel_rock,y_pixel_rock = rover_coords(threshed_rock)
     # 6) Convert rover-centric pixel values to world coordinates
-    navigable_x_world,navigable_y_world =pix_to_world(x_pixel_rover,y_pixel_rover,Rover.pos[0],Rover.pos[1],Rover.yaw,Rover.worldmap.shape[0],2*dst_size)
-    obstacle_x_world,obstacle_navigable_y_world = pix_to_world(x_pixel_obstacle,y_pixel_obstacle,Rover.pos[0],Rover.pos[1],Rover.yaw,Rover.worldmap.shape[0],2*dst_size)
-    rock_x_world,rock_y_world =pix_to_world(x_pixel_rock,y_pixel_rock,Rover.pos[0],Rover.pos[1],Rover.yaw,Rover.worldmap.shape[0],2*dst_size)
+    navigable_x_world,navigable_y_world =pix_to_world(x_pixel_rover,y_pixel_rover,Rover.pos[0],Rover.pos[1],Rover.yaw,Rover.worldmap.shape[0],10)
+    obstacle_x_world,obstacle_navigable_y_world = pix_to_world(x_pixel_obstacle,y_pixel_obstacle,Rover.pos[0],Rover.pos[1],Rover.yaw,Rover.worldmap.shape[0],10)
+    rock_x_world,rock_y_world =pix_to_world(x_pixel_rock,y_pixel_rock,Rover.pos[0],Rover.pos[1],Rover.yaw,Rover.worldmap.shape[0],10)
     # 7) Update Rover worldmap (to be displayed on right side of screen)
         # Example: Rover.worldmap[obstacle_y_world, obstacle_x_world, 0] += 1
         #          Rover.worldmap[rock_y_world, rock_x_world, 1] += 1
         #          Rover.worldmap[navigable_y_world, navigable_x_world, 2] += 1
-    if(Rover.roll< 0.1 or Rover.roll >359.9 )and (Rover.pitch <0.1 or Rover.pitch >359.9) :# range to increase fedality
-        Rover.worldmap[obstacle_navigable_y_world, obstacle_x_world, 0] += 50
-        Rover.worldmap[rock_y_world, rock_x_world, 1] += 50
-        Rover.worldmap[navigable_y_world, navigable_x_world, 2] += 50 
+    Rover.worldmap[obstacle_navigable_y_world, obstacle_x_world, 0] += 50
+    Rover.worldmap[rock_y_world, rock_x_world, 1] += 50
+    Rover.worldmap[navigable_y_world, navigable_x_world, 2] += 50 
     #byzwd weight of blue 3ashan yban aktr l2n el background akhdr f el blue yzeed w yghaty 3ala akhdar
     
     # 8) Convert rover-centric pixel positions to polar coordinates
