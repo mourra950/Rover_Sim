@@ -91,20 +91,21 @@ def perspect_transform(img, src, dst):
 
 # Apply the above functions in succession and update the Rover state accordingly
 def perception_step(Rover):
+    
     #Init some variable that will be used during the perception step
     dst_size= 5
     bottom_offset= 6
-    image= Rover.img
-    # Perform perception steps to update Rover()
-    # TODO: 
+    
     # NOTE: camera image is coming to you in Rover.img
+    image= Rover.img
     
     # 1) Define source and destination points for perspective transform
     #numbers are approximated from a test image with grid
     source = np.float32([[14, 140],
-                     [300, 140],
-                     [200, 95],
-                     [120, 95]])
+                         [300, 140],
+                         [200, 95],
+                         [120, 95]])
+    
     destination = np.float32([[image.shape[1]/2 - dst_size, image.shape[0] - bottom_offset],
                 [image.shape[1]/2 + dst_size, image.shape[0] - bottom_offset],
                 [image.shape[1]/2 + dst_size, image.shape[0] - 2*dst_size - bottom_offset], 
@@ -113,14 +114,11 @@ def perception_step(Rover):
      
     
     # 2) Apply perspective transform
-    
     warped = perspect_transform(image, source, destination)
     
     #Semi-circular mask for clipping terrain/obstacle image
-    
     blank = np.zeros_like(warped)
     circle = cv2.circle(blank.copy(),(warped.shape[1]//2,(warped.shape[1]//2 +75)),120,(255,255,255),-1)
-
     circle = color_thresh(circle,(254,254,254))
     
 
@@ -129,42 +127,34 @@ def perception_step(Rover):
     Terrain_threshold=(150, 150, 150)
     Rock_threshhold=(120,120,-1)
     Rock_threshhold1=(-1,-1,60)
-    
-    #color threshold for all terrain and rocks
+
     ###################################################
     terrain_img=color_thresh(warped,Terrain_threshold)
-    #threshed1 = color_thresh1(image,Rock_threshhold1)
-    #threshed = color_thresh(image,Rock_threshhold)
-    ###################################################
-    #to get rock
-    #threshed_rock = threshed1-threshed
-    #threshed_rock=scipy.ndimage.binary_erosion(threshed_rock, structure=np.ones((3,3))).astype(threshed_rock.dtype)
     threshed_rock =color_thresh(warped,Rock_threshhold,Rock_threshhold1)
-    # clip the far away results as they are not as accurate as i need
     #################################################
+
     #obstacle 
     white = cv2.bitwise_not(np.zeros_like(image)) #white image 
     warped_white = perspect_transform(white, source, destination)# warping our mask 
     warped_white_threshed = color_thresh(warped_white,(1,1,1))#thresholding not needed
     not_terrain = cv2.bitwise_not(terrain_img) #invert the terrain image
     obstacle = cv2.bitwise_and(warped_white_threshed,not_terrain)#applying the mask to the inverted image
-    #obstacle[0:80]= 0
+
     #######################################################################
 
     #Better than linear clipping and more realistic
     terrain_img = cv2.bitwise_and(terrain_img,circle)
     obstacle = cv2.bitwise_and(obstacle,circle)
 
-    #Linear clipping
+    #Linear/old clipping
     # terrain_img[0:clipping_num]=0
     # obstacle[0:clipping_num]= 0
-
     #threshed_rock[0:clipping_num]=0
+    
     # 4) Update Rover.vision_image (this will be displayed on left side of screen)
         # Example: Rover.vision_image[:,:,0] = obstacle color-thresholded binary image
         #          Rover.vision_image[:,:,1] = rock_sample color-thresholded binary image
         #          Rover.vision_image[:,:,2] = navigable terrain color-thresholded binary image
-    
     Rover.vision_image[:,:,0] = obstacle*255
     Rover.vision_image[:,:,1] = threshed_rock*255
     Rover.vision_image[:,:,2] = terrain_img*255
@@ -173,10 +163,12 @@ def perception_step(Rover):
     x_pixel_rover, y_pixel_rover=rover_coords(terrain_img)  #terrain rover
     x_pixel_obstacle,y_pixel_obstacle = rover_coords(obstacle) #obstacle rover
     x_pixel_rock,y_pixel_rock = rover_coords(threshed_rock)
+    
     # 6) Convert rover-centric pixel values to world coordinates
     navigable_x_world,navigable_y_world =pix_to_world(x_pixel_rover,y_pixel_rover,Rover.pos[0],Rover.pos[1],Rover.yaw,Rover.worldmap.shape[0],2*dst_size)
     obstacle_x_world,obstacle_navigable_y_world = pix_to_world(x_pixel_obstacle,y_pixel_obstacle,Rover.pos[0],Rover.pos[1],Rover.yaw,Rover.worldmap.shape[0],2*dst_size)
     rock_x_world,rock_y_world =pix_to_world(x_pixel_rock,y_pixel_rock,Rover.pos[0],Rover.pos[1],Rover.yaw,Rover.worldmap.shape[0],2*dst_size)
+    
     # 7) Update Rover worldmap (to be displayed on right side of screen)
         # Example: Rover.worldmap[obstacle_y_world, obstacle_x_world, 0] += 1
         #          Rover.worldmap[rock_y_world, rock_x_world, 1] += 1
@@ -194,6 +186,7 @@ def perception_step(Rover):
     dist, angles=to_polar_coords(x_pixel_rover, y_pixel_rover)
     dist_rock,angles_rock=to_polar_coords(x_pixel_rock,y_pixel_rock)
     
+    #in case of finding of a rock
     if(len(angles_rock)):
          angles=angles_rock
          dist=dist_rock
@@ -203,6 +196,4 @@ def perception_step(Rover):
     Rover.nav_dists = dist
     Rover.nav_angles= angles
 
-    
-    
     return Rover
