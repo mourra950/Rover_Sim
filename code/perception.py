@@ -189,12 +189,13 @@ def perception_step(Rover):
     dist_rock,angles_rock=to_polar_coords(x_pixel_rock,y_pixel_rock)
     
     #in case of finding of a rock
-    if(len(angles_rock)):
+    if(angles_rock.any()):
          angles=angles_rock
          dist=dist_rock
-         Rover.located_sample=1
+         Rover.mode = 'Rock_in_sight'
     else:
-        Rover.located_sample=0
+        if Rover.mode == 'Rock_in_sight':
+            Rover.mode = 'forward'
     Rover.nav_dists = dist
     Rover.nav_angles= angles
 
