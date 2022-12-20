@@ -14,7 +14,7 @@ def decision_step(Rover):
         if Rover.near_sample==1:
             if Rover.mode == 'forward': 
                 # Check the extent of navigable terrain
-                if min(Rover.nav_dists)>15:  
+                if min(Rover.nav_dists)>10:  
                     # If mode is forward, navigable terrain looks good 
                     # and velocity is below max, then throttle 
                     if Rover.vel < Rover.max_vel:
@@ -27,7 +27,7 @@ def decision_step(Rover):
                     
                     Rover.steer = np.clip(np.mean(Rover.nav_angles * 180/np.pi),-15,15)
                 # If there's a lack of navigable terrain pixels then go to 'stop' mode
-                elif  min(Rover.nav_dists)<15:
+                elif  min(Rover.nav_dists)<10:
                         # Set mode to "stop" and hit the brakes!
                         Rover.throttle = 0
                         # Set brake to stored brake value
@@ -46,8 +46,8 @@ def decision_step(Rover):
                 elif Rover.vel <= 0.2:
                     # Now we're stopped and we have vision data to see if there's a path forward
                     mean=np.clip(np.mean(Rover.nav_angles * 180/np.pi),-15,15)
-                    if min(Rover.nav_dists)<15:
-                        if ((mean>=0 and mean<=5)or(mean<=0 and mean>=-5)) :
+                    if min(Rover.nav_dists)<10:
+                        if ((mean>=0 and mean<=0.1)or(mean<=0 and mean>=-0.1)) :
                             Rover.throttle = 0
                             # Release the brake to allow turning
                             Rover.brake = Rover.brake_set
