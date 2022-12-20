@@ -74,6 +74,7 @@ class RoverState():
         self.samples_to_find = 0 # To store the initial count of samples
         self.samples_located = 0 # To store number of samples located on map
         self.samples_collected = 0 # To count the number of samples collected
+        self.located_sample = 0
         self.near_sample = 0 # Will be set to telemetry value data["near_sample"]
         self.picking_up = 0 # Will be set to telemetry value data["picking_up"]
         self.send_pickup = False # Set to True to trigger rock pickup
@@ -175,7 +176,7 @@ def send_control(commands, image_string1, image_string2):
     eventlet.sleep(0)
 # Define a function to send the "pickup" command 
 def send_pickup():
-    print("Picking up")
+    #print("Picking up")
     pickup = {}
     sio.emit(
         "pickup",

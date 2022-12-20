@@ -11,7 +11,9 @@ def decision_step(Rover):
     # Check if we have vision data to make decisions with
     if Rover.nav_angles is not None:
         # Check for Rover.mode status
-        if Rover.near_sample==1:
+        if Rover.located_sample==1:
+            if Rover.nav_dists is not None:
+                print(f'Min={min(Rover.nav_dists)}')
             if Rover.mode == 'forward': 
                 # Check the extent of navigable terrain
                 if min(Rover.nav_dists)>10:  
@@ -51,6 +53,7 @@ def decision_step(Rover):
                             Rover.throttle = 0
                             # Release the brake to allow turning
                             Rover.brake = Rover.brake_set
+                            Rover.near_sample=1
                         else:
                             Rover.brake = 0
                             # Set steer to mean angle
