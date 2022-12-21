@@ -124,7 +124,7 @@ def perception_step(Rover):
 
     # 3) Apply color threshold to identify navigable terrain/obstacles/rock samples
     #this values derived using the picker tool in photoshop to get the lowest dark color in accepted images
-    Terrain_threshold=(150, 150, 150)
+    Terrain_threshold=(160, 160, 160)
     Rock_threshhold=(120,120,-1)
     Rock_threshhold1=(-1,-1,60)
     #for debugging purposes
@@ -156,10 +156,10 @@ def perception_step(Rover):
         # Example: Rover.vision_image[:,:,0] = obstacle color-thresholded binary image
         #          Rover.vision_image[:,:,1] = rock_sample color-thresholded binary image
         #          Rover.vision_image[:,:,2] = navigable terrain color-thresholded binary image
-    #Rover.vision_image[:,:,0] = obstacle*255
-    #Rover.vision_image[:,:,1] = threshed_rock*255
-    Rover.vision_image[:,:,2] = temp_terrain*255
-    #Rover.vision_image[:,:,2] = terrain_img*255
+    Rover.vision_image[:,:,0] = obstacle*255
+    Rover.vision_image[:,:,1] = threshed_rock*255
+    #Rover.vision_image[:,:,2] = temp_terrain*255
+    Rover.vision_image[:,:,2] = terrain_img*255
      
     # 5) Convert map image pixel values to rover-centric coords
     x_pixel_rover, y_pixel_rover=rover_coords(terrain_img)  #terrain rover
@@ -176,9 +176,10 @@ def perception_step(Rover):
         #          Rover.worldmap[rock_y_world, rock_x_world, 1] += 1
         #          Rover.worldmap[navigable_y_world, navigable_x_world, 2] += 1
     # if(Rover.roll< 0.1 or Rover.roll >359.9 )and (Rover.pitch <0.1 or Rover.pitch >359.9) :
-    Rover.worldmap[obstacle_navigable_y_world, obstacle_x_world, 0] += 50
-    Rover.worldmap[rock_y_world, rock_x_world, 1] += 50
-    Rover.worldmap[navigable_y_world, navigable_x_world, 2] += 50 
+    if (Rover.roll <0.15 or Rover.roll >359.85) : #(Rover.roll< 0.1 or Rover.roll >359.9 )
+        Rover.worldmap[obstacle_navigable_y_world, obstacle_x_world, 0] = 150
+        Rover.worldmap[rock_y_world, rock_x_world, 1] = 150
+        Rover.worldmap[navigable_y_world, navigable_x_world, 2] = 150 
     #byzwd weight of blue 3ashan yban aktr l2n el background akhdr f el blue yzeed w yghaty 3ala akhdar
     
     # 8) Convert rover-centric pixel positions to polar coordinates
