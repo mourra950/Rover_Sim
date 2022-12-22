@@ -1,4 +1,5 @@
 # Do the necessary imports
+import csv
 import argparse
 import shutil
 import base64
@@ -25,7 +26,7 @@ from supporting_functions import update_rover, create_output_images
 # (learn more at: https://python-socketio.readthedocs.io/en/latest/)
 sio = socketio.Server()
 app = Flask(__name__)
-
+first_timer=0
 # Read in ground truth map and create 3-channel green version for overplotting
 # NOTE: images are read in by default with the origin (0, 0) in the upper left
 # and y-axis increasing downward.
@@ -50,6 +51,7 @@ class RoverState():
         self.throttle = 0 # Current throttle value
         self.brake = 0 # Current brake value
         self.nav_angles = None # Angles of navigable terrain pixels
+        self.nav1_angles = None # to decide to stop or not
         self.nav_dists = None # Distances of navigable terrain pixels
         self.ground_truth = ground_truth_3d # Ground truth worldmap
         self.mode = 'forward' # Current mode (can be forward or stop)
@@ -59,9 +61,9 @@ class RoverState():
         # of navigable terrain pixels.  This is a very crude form of knowing
         # when you can keep going and when you should stop.  Feel free to
         # get creative in adding new fields or modifying these!
-        self.stop_forward = 390 # Threshold to initiate stopping
-        self.go_forward = 700 # Threshold to go forward again
-        self.max_vel = 1.6 # Maximum velocity (meters/second)
+        self.stop_forward = 210 # Threshold to initiate stopping
+        self.go_forward = 400 # Threshold to go forward again
+        self.max_vel = 1 # Maximum velocity (meters/second)
         # Image output from perception step
         # Update this image to display your intermediate analysis steps
         # on screen in autonomous mode
@@ -92,7 +94,7 @@ fps = None
 @sio.on('telemetry')
 def telemetry(sid, data):
 
-    global frame_counter, second_counter, fps
+    global frame_counter, second_counter, fps,first_timer
     frame_counter+=1
     # Do a rough calculation of frames per second (FPS)
     if (time.time() - second_counter) > 1:
@@ -144,7 +146,14 @@ def telemetry(sid, data):
             timestamp = datetime.utcnow().strftime('%Y_%m_%d_%H_%M_%S_%f')[:-3]
             image_filename = os.path.join(args.image_folder, timestamp)
             image.save('{}.jpg'.format(image_filename))
+            image_filename = os.path.join(args.image_folder, timestamp)
+            data = ["Path", "SteerAngle", "Throttle", "Brake","Speed","X_Position","Y_Position","Pitch","Yaw","Roll"]
 
+            with open('example.csv', 'a') as file:
+                
+                writer = csv.writer(file, delimiter=';')
+                l=['{}.jpg'.format(image_filename),Rover.steer,Rover.throttle,Rover.brake,Rover.vel,Rover.pos[0],Rover.pos[1],Rover.pitch,Rover.yaw,Rover.roll]
+                writer.writerow(l)
     else:
         sio.emit('manual', data={}, skip_sid=True)
 
@@ -202,6 +211,11 @@ if __name__ == '__main__':
             shutil.rmtree(args.image_folder)
             os.makedirs(args.image_folder)
         print("Recording this run ...")
+        data = ["Path", "SteerAngle", "Throttle", "Brake","Speed","X_Position","Y_Position","Pitch","Yaw","Roll"]
+        with open('example.csv', 'w') as file:
+                writer = csv.writer(file, delimiter=';')
+                writer.writerow(data)
+
     else:
         print("NOT recording this run ...")
     
