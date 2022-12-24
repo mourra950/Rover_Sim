@@ -27,6 +27,7 @@ from supporting_functions import update_rover, create_output_images
 sio = socketio.Server()
 app = Flask(__name__)
 first_timer=0
+iniat=0
 # Read in ground truth map and create 3-channel green version for overplotting
 # NOTE: images are read in by default with the origin (0, 0) in the upper left
 # and y-axis increasing downward.
@@ -55,15 +56,15 @@ class RoverState():
         self.nav_dists = None # Distances of navigable terrain pixels
         self.ground_truth = ground_truth_3d # Ground truth worldmap
         self.mode = 'forward' # Current mode (can be forward or stop)
-        self.throttle_set = 0.2 # Throttle setting when accelerating
+        self.throttle_set = 0.4 # Throttle setting when accelerating
         self.brake_set = 10 # Brake setting when braking
         # The stop_forward and go_forward fields below represent total count
         # of navigable terrain pixels.  This is a very crude form of knowing
         # when you can keep going and when you should stop.  Feel free to
         # get creative in adding new fields or modifying these!
-        self.stop_forward = 210 # Threshold to initiate stopping
-        self.go_forward = 400 # Threshold to go forward again
-        self.max_vel = 1 # Maximum velocity (meters/second)
+        self.stop_forward = 250 # Threshold to initiate stopping
+        self.go_forward = 300 # Threshold to go forward again
+        self.max_vel = 2 # Maximum velocity (meters/second)
         # Image output from perception step
         # Update this image to display your intermediate analysis steps
         # on screen in autonomous mode
@@ -94,7 +95,7 @@ fps = None
 @sio.on('telemetry')
 def telemetry(sid, data):
 
-    global frame_counter, second_counter, fps,first_timer
+    global frame_counter, second_counter, fps,first_timer,iniat
     frame_counter+=1
     # Do a rough calculation of frames per second (FPS)
     if (time.time() - second_counter) > 1:
@@ -129,10 +130,19 @@ def telemetry(sid, data):
                 # Reset Rover flags
                 Rover.send_pickup = False
             else:
+                #print(len(Rover.nav_angles))
                 # Send commands to the rover!
-                commands = (Rover.throttle, Rover.brake, Rover.steer)
-                send_control(commands, out_image_string1, out_image_string2)
-
+                if iniat>150:
+                    commands = (Rover.throttle, Rover.brake, Rover.steer)
+                    send_control(commands, out_image_string1, out_image_string2)
+                    
+                else:
+                    commands = (0, Rover.brake, 15)
+                    send_control(commands, out_image_string1, out_image_string2)
+                    
+                    if 53>Rover.yaw>49 :
+                        iniat=200
+                    
         # In case of invalid telemetry, send null commands
         else:
 

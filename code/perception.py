@@ -118,7 +118,7 @@ def perception_step(Rover):
     
     #Semi-circular mask for clipping terrain/obstacle image
     blank = np.zeros_like(warped)
-    circle = cv2.circle(blank.copy(),(warped.shape[1]//2,(warped.shape[1]//2 +75)),120,(255,255,255),-1)
+    circle = cv2.circle(blank.copy(),((warped.shape[1]//2)-46,(warped.shape[1]//2 +75)),120,(255,255,255),-1)
     circle = color_thresh(circle,(254,254,254))
     
 
@@ -143,9 +143,13 @@ def perception_step(Rover):
     obstacle = cv2.bitwise_and(warped_white_threshed,not_terrain)#applying the mask to the inverted image
 
     #######################################################################
-
+    rect =cv2.circle(blank.copy(),(warped.shape[1]//2,(warped.shape[1]//2 +95)),120,(255,255,255),-1)
+    rect=color_thresh(rect,(1,1,1))
+    terrain_forward = cv2.bitwise_and(terrain_img,rect)
     #Better than linear clipping and more realistic
     terrain_img = cv2.bitwise_and(terrain_img,circle)
+    circle = cv2.circle(blank.copy(),((warped.shape[1]//2),(warped.shape[1]//2 +75)),120,(255,255,255),-1)
+    circle = color_thresh(circle,(254,254,254))
     obstacle = cv2.bitwise_and(obstacle,circle)
 
     #Linear/old clipping
@@ -155,16 +159,14 @@ def perception_step(Rover):
     circle = color_thresh(circle,(254,254,254))
     
     #threshed_rock[0:clipping_num]=0
-    rect =cv2.circle(blank.copy(),(warped.shape[1]//2,(warped.shape[1]//2 +90)),120,(255,255,255),-1)
-    rect=color_thresh(rect,(1,1,1))
-    terrain_forward = cv2.bitwise_and(terrain_img,rect)
+    
     # 4) Update Rover.vision_image (this will be displayed on left side of screen)
         # Example: Rover.vision_image[:,:,0] = obstacle color-thresholded binary image
         #          Rover.vision_image[:,:,1] = rock_sample color-thresholded binary image
         #          Rover.vision_image[:,:,2] = navigable terrain color-thresholded binary image
-    #Rover.vision_image[:,:,0] = obstacle*255
-    #Rover.vision_image[:,:,1] = threshed_rock*255
-    #Rover.vision_image[:,:,2] = temp_terrain*255
+    Rover.vision_image[:,:,0] = obstacle*255
+    Rover.vision_image[:,:,1] = threshed_rock*255
+    Rover.vision_image[:,:,2] = temp_terrain*255
     Rover.vision_image[:,:,2] = terrain_forward*255
      
     # 5) Convert map image pixel values to rover-centric coords
@@ -199,10 +201,12 @@ def perception_step(Rover):
     dist_rock,angles_rock=to_polar_coords(x_pixel_rock,y_pixel_rock)
     
     #in case of finding of a rock
-    if(angles_rock.any()):
-         angles=angles_rock
-         dist=dist_rock
-         Rover.mode = 'Rock_in_sight'
+    if(angles_rock.any())  :
+         dist_to_rock = min(angles_rock)
+         if  dist_to_rock<36:
+            angles=angles_rock
+            dist=dist_rock
+            Rover.mode = 'Rock_in_sight'
     else:
         if Rover.mode == 'Rock_in_sight':
             Rover.mode = 'forward'
