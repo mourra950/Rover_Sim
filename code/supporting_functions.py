@@ -10,9 +10,9 @@ import time
 
 def convert_to_float(string_to_convert):
     if ',' in string_to_convert:
-        float_value = np.float(string_to_convert.replace(',', '.'))
+        float_value = float(string_to_convert.replace(',', '.'))
     else:
-        float_value = np.float(string_to_convert)
+        float_value = float(string_to_convert)
     return float_value
 
 def update_rover(Rover, data):
@@ -25,7 +25,7 @@ def update_rover(Rover, data):
         samples_ypos = np.int_([convert_to_float(pos.strip())
                                 for pos in data["samples_y"].split(';')])
         Rover.samples_pos = (samples_xpos, samples_ypos)
-        Rover.samples_to_find = np.int(data["sample_count"])
+        Rover.samples_to_find = int(data["sample_count"])
     # Or just update elapsed time
     else:
         tot_time = time.time() - Rover.start_time
@@ -48,11 +48,11 @@ def update_rover(Rover, data):
     # The current steering angle
     Rover.steer = convert_to_float(data["steering_angle"])
     # Near sample flag
-    Rover.near_sample = np.int(data["near_sample"])
+    Rover.near_sample = int(data["near_sample"])
     # Picking up flag
-    Rover.picking_up = np.int(data["picking_up"])
+    Rover.picking_up = int(data["picking_up"])
     # Update number of rocks collected
-    Rover.samples_collected = Rover.samples_to_find - np.int(data["sample_count"])
+    Rover.samples_collected = Rover.samples_to_find - int(data["sample_count"])
 
     # print('speed =', Rover.vel, 'position =', Rover.pos, 'throttle =',
     #       Rover.throttle, 'steer_angle =', Rover.steer, 'near_sample:', Rover.near_sample,
@@ -116,15 +116,15 @@ def create_output_images(Rover):
 
     # Calculate some statistics on the map results
     # First get the total number of pixels in the navigable terrain map
-    tot_nav_pix = np.float(len((plotmap[:, :, 2].nonzero()[0])))
+    tot_nav_pix = float(len((plotmap[:, :, 2].nonzero()[0])))
     # Next figure out how many of those correspond to ground truth pixels
-    good_nav_pix = np.float(
+    good_nav_pix = float(
         len(((plotmap[:, :, 2] > 0) & (Rover.ground_truth[:, :, 1] > 0)).nonzero()[0]))
     # Next find how many do not correspond to ground truth pixels
-    bad_nav_pix = np.float(
+    bad_nav_pix = float(
         len(((plotmap[:, :, 2] > 0) & (Rover.ground_truth[:, :, 1] == 0)).nonzero()[0]))
     # Grab the total number of map pixels
-    tot_map_pix = np.float(len((Rover.ground_truth[:, :, 1].nonzero()[0])))
+    tot_map_pix = float(len((Rover.ground_truth[:, :, 1].nonzero()[0])))
     # Calculate the percentage of ground truth map that has been successfully found
     perc_mapped = round(100*good_nav_pix/tot_map_pix, 1)
     # Calculate the number of good map pixel detections divided by total pixels
