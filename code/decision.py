@@ -1,6 +1,9 @@
 import numpy as np
 
-
+def find_nearest(array, value):
+    array = np.asarray(array)
+    idx = (np.abs(array - value)).argmin()
+    return array[idx]
 # This is where you can build a decision tree for determining throttle, brake and steer 
 # commands based on the output of the perception_step() function
 def decision_step(Rover):
@@ -64,7 +67,7 @@ def decision_step(Rover):
         elif Rover.mode == 'Rock_in_sight':
             if Rover.near_sample==0:
                 dist_to_rock = min(Rover.nav_dists) 
-                
+                print(find_nearest(Rover.nav_angles, value=0))
                 if 55>dist_to_rock > 35 :
                 # If mode is forward, navigable terrain looks good 
                 # and velocity is below max, then throttle 
@@ -140,7 +143,7 @@ def decision_step(Rover):
         Rover.brake = 0
         Rover.send_pickup = True
         #code for steering angle to move to pick rock and reach initial position
-        Rover.throttle = Rover.throttle_set
-        Rover.steer = np.clip(np.mean(Rover.nav_angles * 180/np.pi), -15, 15)
-        Rover.mode = 'forward'
+        # Rover.throttle = Rover.throttle_set
+        # Rover.steer = np.clip(np.mean(Rover.nav_angles * 180/np.pi), -15, 15)
+        # Rover.mode = 'forward'
     return Rover

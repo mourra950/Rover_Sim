@@ -146,7 +146,7 @@ def perception_step(Rover):
     circle = cv2.circle(blank.copy(),((warped.shape[1]//2)-35,(warped.shape[1]//2 +80)),110,(255,255,255),-1)
     circle = color_thresh(circle,(254,254,254))
     ###################################
-    circle = cv2.circle(blank.copy(),((warped.shape[1]//2)-48,(warped.shape[1]//2 +80)),130,(255,255,255),-1)
+    circle = cv2.circle(blank.copy(),((warped.shape[1]//2)-50,(warped.shape[1]//2 +80)),130,(255,255,255),-1)
     circle = color_thresh(circle,(254,254,254))
     ###################################
     terrain_img2 = cv2.bitwise_and(terrain_img,circle)
