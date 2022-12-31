@@ -94,7 +94,7 @@ def perception_step(Rover):
     
     #Init some variable that will be used during the perception step
     dst_size= 5
-    bottom_offset= 4
+    bottom_offset= 3
     
     # NOTE: camera image is coming to you in Rover.img
     image= Rover.img
@@ -135,42 +135,41 @@ def perception_step(Rover):
     obstacle = cv2.bitwise_and(warped_white_threshed,not_terrain)#applying the mask to the inverted image
     blank = np.zeros_like(warped)
     #######################################################################
+    #masking section
+    #######################################################################
+    #mask to check if the rover keep going forward or stop
+    #######################################################################
     rect =cv2.rectangle(blank.copy(), (154,130),(165,160), (255,255,255), -1)
-    #cv2.circle(blank.copy(),(warped.shape[1]//2,(warped.shape[1]//2 +90)),120,(255,255,255),-1)
     rect=color_thresh(rect,(1,1,1))
     terrain_forward = cv2.bitwise_and(terrain_img,rect)#FORWARD NAVIGATION
-    #Better than linear clipping and more realistic
-        
-    #Semi-circular mask for clipping terrain/obstacle image
-    
-    circle = cv2.circle(blank.copy(),((warped.shape[1]//2)-35,(warped.shape[1]//2 +80)),110,(255,255,255),-1)
+
+    # circle = cv2.circle(blank.copy(),((warped.shape[1]//2)-35,(warped.shape[1]//2 +80)),110,(255,255,255),-1)
+    # circle = color_thresh(circle,(254,254,254))
+    # ###################################
+    circle = cv2.circle(blank.copy(),((warped.shape[1]//2)-65,(warped.shape[1]//2 +85)),130,(255,255,255),-1)
     circle = color_thresh(circle,(254,254,254))
-    ###################################
-    circle = cv2.circle(blank.copy(),((warped.shape[1]//2)-50,(warped.shape[1]//2 +80)),130,(255,255,255),-1)
-    circle = color_thresh(circle,(254,254,254))
-    ###################################
+    #######################################################
+    #masking for terrain that will change the steering angle
+    #######################################################
     terrain_img2 = cv2.bitwise_and(terrain_img,circle)
     terrain_img2=scipy.ndimage.binary_erosion(terrain_img2, structure=np.ones((4,4))).astype(terrain_img2.dtype)
+    Rover.vision_image[:,:,2] = circle*255
+    ##################################################
+    #masking for terrain and obstacles that will be used to map the world map
+    ##################################################
     circle = cv2.circle(blank.copy(),((warped.shape[1]//2)+25,(warped.shape[1]//2 +65)),115,(255,255,255),-1)
     circle = color_thresh(circle,(254,254,254))
     obstacle = cv2.bitwise_and(obstacle,circle)
     terrain_img = cv2.bitwise_and(terrain_img,circle)
     terrain_img=scipy.ndimage.binary_erosion(terrain_img, structure=np.ones((2,2))).astype(terrain_img.dtype)
-    #Linear/old clipping
-    # terrain_img[0:clipping_num]=0
-    # obstacle[0:clipping_num]= 0
-    #circle = cv2.circle(blank.copy(),(warped.shape[1]//2,(warped.shape[1]//2 +65)),120,(255,255,255),-1)
-    #circle = color_thresh(circle,(254,254,254))
-    
-    #threshed_rock[0:clipping_num]=0
     
     # 4) Update Rover.vision_image (this will be displayed on left side of screen)
         # Example: Rover.vision_image[:,:,0] = obstacle color-thresholded binary image
         #          Rover.vision_image[:,:,1] = rock_sample color-thresholded binary image
         #          Rover.vision_image[:,:,2] = navigable terrain color-thresholded binary image
-    #Rover.vision_image[:,:,0] = obstacle*255
-    # Rover.vision_image[:,:,1] = threshed_rock*255
-    Rover.vision_image[:,:,2] = terrain_img*255
+    Rover.vision_image[:,:,0] = obstacle*255
+    Rover.vision_image[:,:,1] = threshed_rock*255
+    
     #Rover.vision_image[:,:,2] = terrain_forward*255
      
     # 5) Convert map image pixel values to rover-centric coords
@@ -208,11 +207,12 @@ def perception_step(Rover):
     
     #in case of finding of a rock
     if(angles_rock.any())  :
-        dist_to_rock = min(angles_rock)      
+        #replace the nav angles and distance of navigable terrain to that of the rock 
         angles=angles_rock
         dist=dist_rock
         Rover.mode = 'Rock_in_sight'
     else:
+    #if rock was in sight and now isnt turn mode back to forward
         if Rover.mode == 'Rock_in_sight':
             Rover.mode = 'forward'
     Rover.nav_dists = dist

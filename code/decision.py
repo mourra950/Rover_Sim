@@ -65,6 +65,9 @@ def decision_step(Rover):
                     Rover.steer = np.clip(np.mean(Rover.nav_angles * 180/np.pi), -15, 15)
                     Rover.mode = 'forward'
         elif Rover.mode == 'Rock_in_sight':
+            ##########################################################################
+            #dividing this mode to different parts depending on how far the nearest part of the rock is compared to us
+            ##########################################################################
             if Rover.near_sample==0:
                 dist_to_rock = min(Rover.nav_dists) 
                 print(find_nearest(Rover.nav_angles, value=0))
