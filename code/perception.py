@@ -117,7 +117,7 @@ def perception_step(Rover):
     warped = perspect_transform(image, source, destination)
     # 3) Apply color threshold to identify navigable terrain/obstacles/rock samples
     #this values derived using the picker tool in photoshop to get the lowest dark color in accepted images
-    Terrain_threshold=(150, 150, 150)
+    Terrain_threshold=(160, 160, 160)
     Rock_threshhold=(120,120,-1)
     Rock_threshhold1=(-1,-1,60)
     ###################################################
@@ -143,13 +143,13 @@ def perception_step(Rover):
     terrain_forward = cv2.bitwise_and(terrain_img,rect)#FORWARD NAVIGATION
     # ###################################
     #different circle for different mask purposes
-    circle = cv2.circle(blank.copy(),((warped.shape[1]//2)-65,(warped.shape[1]//2 +85)),130,(255,255,255),-1)
+    circle = cv2.circle(blank.copy(),((warped.shape[1]//2)-48,(warped.shape[1]//2 +80)),130,(255,255,255),-1)
     circle = color_thresh(circle,(254,254,254))
     #######################################################
     #masking for terrain that will change the steering angle
     #######################################################
     terrain_img2 = cv2.bitwise_and(terrain_img,circle)
-    terrain_img2=scipy.ndimage.binary_erosion(terrain_img2, structure=np.ones((4,4))).astype(terrain_img2.dtype)
+    terrain_img2=scipy.ndimage.binary_erosion(terrain_img2, structure=np.ones((6,6))).astype(terrain_img2.dtype)
     Rover.vision_image[:,:,2] = circle*255
     ##################################################
     #masking for terrain and obstacles that will be used to map the world map
@@ -161,7 +161,7 @@ def perception_step(Rover):
     obstacle = cv2.bitwise_and(obstacle,circle)
     terrain_img = cv2.bitwise_and(terrain_img,circle)
     #applying errosion to make sure thin paths that arent accessible not changing our steering toward rocks
-    terrain_img=scipy.ndimage.binary_erosion(terrain_img, structure=np.ones((2,2))).astype(terrain_img.dtype)
+    terrain_img=scipy.ndimage.binary_erosion(terrain_img, structure=np.ones((4,4))).astype(terrain_img.dtype)
     
     # 4) Update Rover.vision_image (this will be displayed on left side of screen)
         # Example: Rover.vision_image[:,:,0] = obstacle color-thresholded binary image
@@ -169,7 +169,7 @@ def perception_step(Rover):
         #          Rover.vision_image[:,:,2] = navigable terrain color-thresholded binary image
     Rover.vision_image[:,:,0] = obstacle*255
     Rover.vision_image[:,:,1] = threshed_rock*255
-    Rover.vision_image[:,:,2] = terrain_forward*255
+    Rover.vision_image[:,:,2] = terrain_img2*255
      
     # 5) Convert map image pixel values to rover-centric coords
     x_pixel_rover, y_pixel_rover=rover_coords(terrain_img)  #terrain rover

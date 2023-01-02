@@ -78,23 +78,23 @@ def decision_step(Rover):
                 #store the nearest part of the located rock to the rover
                 dist_to_rock = min(Rover.nav_dists) 
                 #if nearest part of the rock in distance between 35 to 55 pixels
-                if 55>dist_to_rock > 35 :
+                if 65>dist_to_rock > 45 :
                     if Rover.vel < 1:
                         Rover.brake = 0
                         Rover.throttle = Rover.throttle_set
                     else:
                         Rover.throttle = 0
                         Rover.brake = 1
-                    Rover.steer = np.clip(np.mean(Rover.nav_angles * 180/np.pi),-8,8)
+                    Rover.steer = np.clip(np.mean(Rover.nav_angles * 180/np.pi),-10,6)
                 #if nearest part of the rock in distance between 22 to 35 pixels
                 elif dist_to_rock > 22:
-                    if Rover.vel < 0.8:
-                        Rover.throttle = Rover.throttle_set
+                    if Rover.vel < 0.6:
+                        Rover.throttle = 2
                         Rover.brake = 0 
                     else:
                         Rover.throttle = 0
                         Rover.brake = 4
-                    Rover.steer = np.clip(np.mean(Rover.nav_angles * 180/np.pi),-10,10)
+                    Rover.steer = np.clip(np.mean(Rover.nav_angles * 180/np.pi),-12,8)
                 #if nearest part of the rock in distance between 12 to 22 pixels
                 elif dist_to_rock > 12:
                     if Rover.vel < 0.7:
@@ -104,7 +104,7 @@ def decision_step(Rover):
                     else: # Else coast
                         Rover.throttle = 0
                         Rover.brake = 4
-                    Rover.steer = np.clip(np.mean(Rover.nav_angles * 180/np.pi),-12,12)
+                    Rover.steer = np.clip(np.mean(Rover.nav_angles * 180/np.pi),-14,10)
                 #if nearest part of the rock in distance is less then 12 so the rock is pretty close
                 elif dist_to_rock <12:
                     if Rover.vel >= 0.4:

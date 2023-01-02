@@ -138,7 +138,7 @@ def telemetry(sid, data):
                     send_control(commands, out_image_string1, out_image_string2)
                     
                 else:
-                    commands = (0, Rover.brake, 15)
+                    commands = (0, Rover.brake, 5)
                     send_control(commands, out_image_string1, out_image_string2)
                     
                     if 53>Rover.yaw>49 :
