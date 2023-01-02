@@ -16,7 +16,7 @@ def decision_step(Rover):
         # Check for Rover.mode status
        # print(len(Rover.nav1_angles))
         if Rover.mode == 'forward': 
-           
+            Rover.frames_stop=0
             # Check the extent of navigable terrain
             if len(Rover.nav1_angles) >= Rover.stop_forward:  
                 # If mode is forward, navigable terrain looks good 
@@ -53,7 +53,12 @@ def decision_step(Rover):
                     Rover.throttle = 0
                     # Release the brake to allow turning
                     Rover.brake = 0
-                    # Turn range is +/- 15 degrees, when stopped the next line will induce 4-wheel turning
+                    # print(Rover.frames_stop)
+                    # if Rover.frames_stop<200:
+                    #     Rover.steer=3
+                    #     Rover.frames_stop+=1
+                    # else:
+                        # Turn range is +/- 15 degrees, when stopped the next line will induce 4-wheel turning
                     Rover.steer = -4 # Could be more clever here about which way to turn
                 # If we're stopped but see sufficient navigable terrain in front then go!
                 if len(Rover.nav1_angles) >= Rover.go_forward:

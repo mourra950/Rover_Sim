@@ -65,6 +65,7 @@ class RoverState():
         self.stop_forward = 220 # Threshold to initiate stopping
         self.go_forward = 275# Threshold to go forward again
         self.max_vel = 0.8# Maximum velocity (meters/second)
+        self.frames_stop=0
         # Image output from perception step
         # Update this image to display your intermediate analysis steps
         # on screen in autonomous mode

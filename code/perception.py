@@ -94,7 +94,7 @@ def perception_step(Rover):
     
     #Init some variable that will be used during the perception step
     dst_size= 5
-    bottom_offset= 3
+    bottom_offset= 4
     
     # NOTE: camera image is coming to you in Rover.img
     image= Rover.img
