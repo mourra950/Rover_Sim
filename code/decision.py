@@ -71,33 +71,31 @@ def decision_step(Rover):
                     Rover.mode = 'forward'
         elif Rover.mode == 'Rock_in_sight':
             ##########################################################################
-            #dividing this mode to different parts depending on how far the nearest part of the rock is compared to us
+            #dividing this mode to different parts depending on how far the nearest part of the rock is compared to us to adjust the steering power and maximum speed
             ##########################################################################
-            if Rover.near_sample==0:
+            #by checking if the flag is raised or not the rover keep moving toward the rock
+            if Rover.near_sample==0: 
+                #store the nearest part of the located rock to the rover
                 dist_to_rock = min(Rover.nav_dists) 
-                print(find_nearest(Rover.nav_angles, value=0))
+                #if nearest part of the rock in distance between 35 to 55 pixels
                 if 55>dist_to_rock > 35 :
-                # If mode is forward, navigable terrain looks good 
-                # and velocity is below max, then throttle 
                     if Rover.vel < 1:
-                        # Set throttle value to throttle setting
                         Rover.brake = 0
                         Rover.throttle = Rover.throttle_set
-                    else: # Else coast
+                    else:
                         Rover.throttle = 0
-                        Rover.brake = 4
+                        Rover.brake = 1
                     Rover.steer = np.clip(np.mean(Rover.nav_angles * 180/np.pi),-8,8)
+                #if nearest part of the rock in distance between 22 to 35 pixels
                 elif dist_to_rock > 22:
                     if Rover.vel < 0.8:
-                        # Set throttle value to throttle setting
                         Rover.throttle = Rover.throttle_set
                         Rover.brake = 0 
-                    else: # Else coast
-                        
+                    else:
                         Rover.throttle = 0
                         Rover.brake = 4
-                    Rover.steer = np.clip(np.mean(Rover.nav_angles * 180/np.pi),-10,10)        
-                
+                    Rover.steer = np.clip(np.mean(Rover.nav_angles * 180/np.pi),-10,10)
+                #if nearest part of the rock in distance between 12 to 22 pixels
                 elif dist_to_rock > 12:
                     if Rover.vel < 0.7:
                         # Set throttle value to throttle setting
@@ -106,20 +104,19 @@ def decision_step(Rover):
                     else: # Else coast
                         Rover.throttle = 0
                         Rover.brake = 4
-                    Rover.steer = np.clip(np.mean(Rover.nav_angles * 180/np.pi),-12,12)        
-                
-                # Set steering to average angle clipped to the range +/- 15
+                    Rover.steer = np.clip(np.mean(Rover.nav_angles * 180/np.pi),-12,12)
+                #if nearest part of the rock in distance is less then 12 so the rock is pretty close
                 elif dist_to_rock <12:
                     if Rover.vel >= 0.4:
                         Rover.throttle = 0
                         Rover.brake = Rover.brake_set
                         Rover.steer = 0
                     else:
+                        #check if the rock mean is in range between 20 and -20 in angles
                         if np.mean(Rover.nav_angles * 180/np.pi) <20 and np.mean(Rover.nav_angles * 180/np.pi) >-20 :
                             Rover.throttle=0.2
                             Rover.brake=0
-                            Rover.steer=0
-                        
+                            Rover.steer=0 
                         else:
                             if Rover.vel <= 0.2:
                                 Rover.brake = 0
@@ -128,16 +125,13 @@ def decision_step(Rover):
                                 Rover.brake = Rover.brake_set
                                 Rover.throttle=0
                                 Rover.steer = 0
-                        #code for steering angle to move to pick rock and reach initial position
-            else:
+            else: #rock is in position to be picked use brakes to stop to be able to pick it
                     if Rover.vel > 0:
                         Rover.throttle = 0
                         Rover.brake = Rover.brake_set
                         Rover.steer = 0
                         #code for steering angle to move to pick rock and reach initial position
                         
-
-
         # Just to make the rover do something 
         # even if no modifications have been made to the code
     else:
@@ -150,8 +144,4 @@ def decision_step(Rover):
         Rover.steer = 0
         Rover.brake = 0
         Rover.send_pickup = True
-        #code for steering angle to move to pick rock and reach initial position
-        # Rover.throttle = Rover.throttle_set
-        # Rover.steer = np.clip(np.mean(Rover.nav_angles * 180/np.pi), -15, 15)
-        # Rover.mode = 'forward'
     return Rover

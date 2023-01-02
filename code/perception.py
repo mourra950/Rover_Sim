@@ -117,16 +117,15 @@ def perception_step(Rover):
     warped = perspect_transform(image, source, destination)
     # 3) Apply color threshold to identify navigable terrain/obstacles/rock samples
     #this values derived using the picker tool in photoshop to get the lowest dark color in accepted images
-    Terrain_threshold=(160, 160, 160)
+    Terrain_threshold=(150, 150, 150)
     Rock_threshhold=(120,120,-1)
     Rock_threshhold1=(-1,-1,60)
-    #for debugging purposes
-    temp_terrain=color_thresh(image,Terrain_threshold)
     ###################################################
+    #apply the terrain threshold
     terrain_img=color_thresh(warped,Terrain_threshold)
+    #apply the rock threshold
     threshed_rock =color_thresh(warped,Rock_threshhold,Rock_threshhold1)
     #################################################
-
     #obstacle 
     white = cv2.bitwise_not(np.zeros_like(image)) #white image 
     warped_white = perspect_transform(white, source, destination)# warping our mask 
@@ -142,10 +141,8 @@ def perception_step(Rover):
     rect =cv2.rectangle(blank.copy(), (154,130),(165,160), (255,255,255), -1)
     rect=color_thresh(rect,(1,1,1))
     terrain_forward = cv2.bitwise_and(terrain_img,rect)#FORWARD NAVIGATION
-
-    # circle = cv2.circle(blank.copy(),((warped.shape[1]//2)-35,(warped.shape[1]//2 +80)),110,(255,255,255),-1)
-    # circle = color_thresh(circle,(254,254,254))
     # ###################################
+    #different circle for different mask purposes
     circle = cv2.circle(blank.copy(),((warped.shape[1]//2)-65,(warped.shape[1]//2 +85)),130,(255,255,255),-1)
     circle = color_thresh(circle,(254,254,254))
     #######################################################
@@ -157,10 +154,13 @@ def perception_step(Rover):
     ##################################################
     #masking for terrain and obstacles that will be used to map the world map
     ##################################################
+    #changing circle again
     circle = cv2.circle(blank.copy(),((warped.shape[1]//2)+25,(warped.shape[1]//2 +65)),115,(255,255,255),-1)
     circle = color_thresh(circle,(254,254,254))
+    #applying the clipping
     obstacle = cv2.bitwise_and(obstacle,circle)
     terrain_img = cv2.bitwise_and(terrain_img,circle)
+    #applying errosion to make sure thin paths that arent accessible not changing our steering toward rocks
     terrain_img=scipy.ndimage.binary_erosion(terrain_img, structure=np.ones((2,2))).astype(terrain_img.dtype)
     
     # 4) Update Rover.vision_image (this will be displayed on left side of screen)
@@ -169,8 +169,7 @@ def perception_step(Rover):
         #          Rover.vision_image[:,:,2] = navigable terrain color-thresholded binary image
     Rover.vision_image[:,:,0] = obstacle*255
     Rover.vision_image[:,:,1] = threshed_rock*255
-    
-    #Rover.vision_image[:,:,2] = terrain_forward*255
+    Rover.vision_image[:,:,2] = terrain_forward*255
      
     # 5) Convert map image pixel values to rover-centric coords
     x_pixel_rover, y_pixel_rover=rover_coords(terrain_img)  #terrain rover
@@ -190,12 +189,12 @@ def perception_step(Rover):
         # Example: Rover.worldmap[obstacle_y_world, obstacle_x_world, 0] += 1
         #          Rover.worldmap[rock_y_world, rock_x_world, 1] += 1
         #          Rover.worldmap[navigable_y_world, navigable_x_world, 2] += 1
-    # if(Rover.roll< 0.1 or Rover.roll >359.9 )and (Rover.pitch <0.1 or Rover.pitch >359.9) :
-    if (Rover.roll <0.2 or Rover.roll >359.80) and (Rover.pitch <0.2 or Rover.pitch >359.80) : #(Rover.roll< 0.1 or Rover.roll >359.9 )
+    # making sure only accurate reading are taken by making sure some ranges of the rover state is meet as condition
+    if (Rover.roll <0.2 or Rover.roll >359.80) and (Rover.pitch <0.2 or Rover.pitch >359.80) :
+        #increasing the weight of each corresponding to the obstacle or terrain or rock to be shown on the map
         Rover.worldmap[obstacle_navigable_y_world, obstacle_x_world, 0] = 150
         Rover.worldmap[rock_y_world, rock_x_world, 1] = 150
         Rover.worldmap[navigable_y_world, navigable_x_world, 2] = 150 
-    #byzwd weight of blue 3ashan yban aktr l2n el background akhdr f el blue yzeed w yghaty 3ala akhdar
     
     # 8) Convert rover-centric pixel positions to polar coordinates
     # Update Rover pixel distances and angles
@@ -215,8 +214,11 @@ def perception_step(Rover):
     #if rock was in sight and now isnt turn mode back to forward
         if Rover.mode == 'Rock_in_sight':
             Rover.mode = 'forward'
+    #used to take decision in steering
     Rover.nav_dists = dist
+    #used to take decision rock finding
     Rover.nav_angles= angles
+    #used to take decision in keep going or stoping
     Rover.nav1_angles= angles1
 
     return Rover
