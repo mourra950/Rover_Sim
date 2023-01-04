@@ -71,11 +71,13 @@ def decision_step(Rover):
             dist_to_rock = min(Rover.navrock_dists) 
             nav_power_steering=0
             if 11<dist_to_rock<=18:
-                nav_power_steering=5
-            elif 18<dist_to_rock<=45:
+                nav_power_steering=4
+            elif 18<dist_to_rock<=28:
+                nav_power_steering=6
+            elif 28<dist_to_rock<=45:
                 nav_power_steering=8
             elif 45<dist_to_rock:
-                nav_power_steering=12
+                nav_power_steering=10
             if(Rover.nav_angles.any()):
                 steerterrain=np.clip(np.mean(Rover.nav_angles * 180/np.pi),-nav_power_steering,nav_power_steering)
             dist_to_rock = min(Rover.navrock_dists) 
