@@ -160,7 +160,7 @@ def perception_step(Rover):
     obstacle = cv2.bitwise_and(obstacle,circle)
     terrain_img = cv2.bitwise_and(terrain_img,circle)
     #applying errosion to make sure thin paths that arent accessible not changing our steering toward rocks
-    terrain_img=scipy.ndimage.binary_erosion(terrain_img, structure=np.ones((4,4))).astype(terrain_img.dtype)
+    terrain_img=scipy.ndimage.binary_erosion(terrain_img, structure=np.ones((3,4))).astype(terrain_img.dtype)
     
     # 4) Update Rover.vision_image (this will be displayed on left side of screen)
         # Example: Rover.vision_image[:,:,0] = obstacle color-thresholded binary image
@@ -189,7 +189,7 @@ def perception_step(Rover):
         #          Rover.worldmap[rock_y_world, rock_x_world, 1] += 1
         #          Rover.worldmap[navigable_y_world, navigable_x_world, 2] += 1
     # making sure only accurate reading are taken by making sure some ranges of the rover state is meet as condition
-    if (Rover.roll <0.2 or Rover.roll >359.80) and (Rover.pitch <0.2 or Rover.pitch >359.80) :
+    if (Rover.roll <0.25 or Rover.roll >359.75) and (Rover.pitch <0.25 or Rover.pitch >359.75) :
         #increasing the weight of each corresponding to the obstacle or terrain or rock to be shown on the map
         Rover.worldmap[obstacle_navigable_y_world, obstacle_x_world, 0] = 150
         Rover.worldmap[rock_y_world, rock_x_world, 1] = 150

@@ -117,7 +117,7 @@ def telemetry(sid, data):
     
         
         if np.isfinite(Rover.vel):
-            if Rover.initpoint != None:
+            if Rover.initpoint == None:
                 Rover.initpoint=Rover.pos
             # Execute the perception and decision steps to update the Rover's state
             Rover = perception_step(Rover)
