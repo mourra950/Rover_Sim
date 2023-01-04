@@ -68,7 +68,8 @@ class RoverState():
         self.go_forward = 275# Threshold to go forward again
         self.max_vel = 1# Maximum velocity (meters/second)
         self.frames_stop=0 # a variable to let the rover stabilize before doing action again
-        
+        self.home_return_flag=0
+        self.initpoint=None
         #####################################################################################
         self.mapped_percentage=0
         # Image output from perception step
@@ -108,14 +109,16 @@ def telemetry(sid, data):
         fps = frame_counter
         frame_counter = 0
         second_counter = time.time()
-   # print("Current FPS: {}".format(fps))
-        
-        
+    print("Current FPS: {}".format(fps))
+    if data:
+        global Rover
         # Initialize / update Rover with current telemetry
         Rover, image = update_rover(Rover, data)
-
+    
+        
         if np.isfinite(Rover.vel):
-
+            if Rover.initpoint != None:
+                Rover.initpoint=Rover.pos
             # Execute the perception and decision steps to update the Rover's state
             Rover = perception_step(Rover)
             Rover = decision_step(Rover)

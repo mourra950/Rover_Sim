@@ -1,5 +1,5 @@
 import numpy as np
-
+import os
 def find_nearest(array, value):
     array = np.asarray(array)
     idx = (np.abs(array - value)).argmin()
@@ -46,7 +46,7 @@ def decision_step(Rover):
                 Rover.brake = Rover.brake_set
                 Rover.steer = 0
             # If we're not moving (vel < 0.2) then do something else
-            elif Rover.vel <= 0.2:
+            elif Rover.vel <= 0.2 and Rover.frames_stop>100:
                 #print(len(Rover.navstop_angles))
                 # Now we're stopped and we have vision data to see if there's a path forward
                 if len(Rover.navstop_angles) < Rover.go_forward:
@@ -64,13 +64,22 @@ def decision_step(Rover):
                     # Set steer to mean angle
                     Rover.steer = np.clip(np.mean(Rover.nav_angles * 180/np.pi), -15, 15)
                     Rover.mode = 'forward'
+            Rover.frames_stop+=1
         elif Rover.mode == 'Rock_in_sight':
             Rover.frames_stop=0
             steerterrain=0
-            if(Rover.nav_angles.any()):
-                steerterrain=np.clip(np.mean(Rover.nav_angles * 180/np.pi),-8,8)
             dist_to_rock = min(Rover.navrock_dists) 
-            print(Rover.near_sample)
+            nav_power_steering=0
+            if 11<dist_to_rock<=18:
+                nav_power_steering=5
+            elif 18<dist_to_rock<=45:
+                nav_power_steering=8
+            elif 45<dist_to_rock:
+                nav_power_steering=12
+            if(Rover.nav_angles.any()):
+                steerterrain=np.clip(np.mean(Rover.nav_angles * 180/np.pi),-nav_power_steering,nav_power_steering)
+            dist_to_rock = min(Rover.navrock_dists) 
+            #print(Rover.near_sample)
             if (Rover.near_sample==0) or (dist_to_rock>9):
                 # Check the extent of navigable terrain
                 # If mode is forward, navigable terrain looks good 
@@ -171,4 +180,15 @@ def decision_step(Rover):
         Rover.brake = 0
         Rover.send_pickup = True
         Rover.mode == 'forward'
+    
+    if Rover.mapped_percentage >95 and Rover.samples_collected>=5:
+        Rover.home_return_flag=1
+      
+    if Rover.home_return_flag==1:
+        if Rover.initpoint[0]+3>Rover.pos[0]>Rover.initpoint[0]-3 and Rover.initpoint[1]+3>Rover.pos[1]>Rover.initpoint[1]-3:
+            Rover.steer=0
+            Rover.throttle=0
+            Rover.brake=Rover.brake_set
+            os.system('cls')
+            print('You are Home welcome back champ')
     return Rover

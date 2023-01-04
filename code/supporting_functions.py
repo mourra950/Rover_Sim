@@ -135,6 +135,7 @@ def create_output_images(Rover):
         fidelity = 0
     # Flip the map for plotting so that the y-axis points upward in the display
     map_add = np.flipud(map_add).astype(np.float32)
+    Rover.mapped_percentage=perc_mapped
     # Add some text about map and rock sample detection results
     cv2.putText(map_add, "Time: "+str(np.round(Rover.total_time, 1))+' s', (0, 10),
                 cv2.FONT_HERSHEY_COMPLEX, 0.4, (255, 255, 255), 1)

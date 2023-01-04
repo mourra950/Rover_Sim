@@ -154,13 +154,13 @@ def perception_step(Rover):
     #masking for terrain and obstacles that will be used to map the world map
     ##################################################
     #changing circle again
-    circle = cv2.circle(blank.copy(),((warped.shape[1]//2)+25,(warped.shape[1]//2 +65)),115,(255,255,255),-1)
+    circle = cv2.circle(blank.copy(),((warped.shape[1]//2),(warped.shape[1]//2 +65)),115,(255,255,255),-1)
     circle = color_thresh(circle,(254,254,254))
     #applying the clipping
     obstacle = cv2.bitwise_and(obstacle,circle)
     terrain_img = cv2.bitwise_and(terrain_img,circle)
     #applying errosion to make sure thin paths that arent accessible not changing our steering toward rocks
-    #terrain_img=scipy.ndimage.binary_erosion(terrain_img, structure=np.ones((4,4))).astype(terrain_img.dtype)
+    terrain_img=scipy.ndimage.binary_erosion(terrain_img, structure=np.ones((4,4))).astype(terrain_img.dtype)
     
     # 4) Update Rover.vision_image (this will be displayed on left side of screen)
         # Example: Rover.vision_image[:,:,0] = obstacle color-thresholded binary image
@@ -168,7 +168,7 @@ def perception_step(Rover):
         #          Rover.vision_image[:,:,2] = navigable terrain color-thresholded binary image
     Rover.vision_image[:,:,0] = obstacle*255
     Rover.vision_image[:,:,1] = threshed_rock*255
-    Rover.vision_image[:,:,2] = terrain_steer*255
+    Rover.vision_image[:,:,2] = terrain_img*255
      
     # 5) Convert map image pixel values to rover-centric coords
     x_pixel_rover, y_pixel_rover=rover_coords(terrain_img)  #terrain rover

@@ -9,3 +9,4 @@ pickle5
 Pillow
 imageio
 pandas
+scipy
