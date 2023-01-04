@@ -147,9 +147,9 @@ def perception_step(Rover):
     #######################################################
     #masking for terrain that will change the steering angle
     #######################################################
-    terrain_img2 = cv2.bitwise_and(terrain_img,circle)
-    terrain_img2=scipy.ndimage.binary_erosion(terrain_img2, structure=np.ones((6,6))).astype(terrain_img2.dtype)
-    Rover.vision_image[:,:,2] = circle*255
+    terrain_steer = cv2.bitwise_and(terrain_img,circle)
+    terrain_steer=scipy.ndimage.binary_erosion(terrain_steer, structure=np.ones((6,6))).astype(terrain_steer.dtype)
+    
     ##################################################
     #masking for terrain and obstacles that will be used to map the world map
     ##################################################
@@ -160,7 +160,7 @@ def perception_step(Rover):
     obstacle = cv2.bitwise_and(obstacle,circle)
     terrain_img = cv2.bitwise_and(terrain_img,circle)
     #applying errosion to make sure thin paths that arent accessible not changing our steering toward rocks
-    terrain_img=scipy.ndimage.binary_erosion(terrain_img, structure=np.ones((4,4))).astype(terrain_img.dtype)
+    #terrain_img=scipy.ndimage.binary_erosion(terrain_img, structure=np.ones((4,4))).astype(terrain_img.dtype)
     
     # 4) Update Rover.vision_image (this will be displayed on left side of screen)
         # Example: Rover.vision_image[:,:,0] = obstacle color-thresholded binary image
@@ -168,11 +168,11 @@ def perception_step(Rover):
         #          Rover.vision_image[:,:,2] = navigable terrain color-thresholded binary image
     Rover.vision_image[:,:,0] = obstacle*255
     Rover.vision_image[:,:,1] = threshed_rock*255
-    Rover.vision_image[:,:,2] = terrain_img2*255
+    Rover.vision_image[:,:,2] = terrain_steer*255
      
     # 5) Convert map image pixel values to rover-centric coords
     x_pixel_rover, y_pixel_rover=rover_coords(terrain_img)  #terrain rover
-    x2_pixel_rover, y2_pixel_rover=rover_coords(terrain_img2)  #terrain rover
+    x2_pixel_rover, y2_pixel_rover=rover_coords(terrain_steer)  #terrain rover
     x1_pixel_rover, y1_pixel_rover=rover_coords(terrain_forward)
     x_pixel_obstacle,y_pixel_obstacle = rover_coords(obstacle) #obstacle rover
     x_pixel_rock,y_pixel_rock = rover_coords(threshed_rock)
