@@ -77,6 +77,7 @@ def decision_step(Rover):
             if Rover.near_sample==0: 
                 #store the nearest part of the located rock to the rover
                 dist_to_rock = min(Rover.nav_dists) 
+                print(max(Rover.nav_angles)* 180/np.pi)
                 #if nearest part of the rock in distance between 35 to 55 pixels
                 if 65>dist_to_rock > 45 :
                     if Rover.vel < 1:

@@ -1,0 +1,25 @@
+warped 
+
+terrain_img
+el navigable terrain kolaha we el hane3mel beeha el mapping
+
+threshed_rock sort el rock lewa7daha
+obstacle invert terrain_img
+
+rect 
+rectangular mask used 3ashan negeb el masafa el odamna we menha ne3raf hano2af wala nekamel
+
+terrain forward
+dah el bitwise maben el terrain_img we el rect mask
+
+circle 
+circular mask
+
+awel circle
+dah beyeb2a el mask steering
+
+terrain_img2
+dah el sora el bet7aded el steering
+
+
+tany circle dah hayeb2a el mask beta3 el mapping
