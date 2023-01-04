@@ -52,7 +52,9 @@ class RoverState():
         self.throttle = 0 # Current throttle value
         self.brake = 0 # Current brake value
         self.nav_angles = None # Angles of navigable terrain pixels
-        self.nav1_angles = None # to decide to stop or not
+        self.navstop_angles = None # to decide to stop or not
+        self.navrock_angles = None
+        self.navrock_dists = None
         self.nav_dists = None # Distances of navigable terrain pixels
         self.ground_truth = ground_truth_3d # Ground truth worldmap
         self.mode = 'forward' # Current mode (can be forward or stop)
@@ -64,8 +66,11 @@ class RoverState():
         # get creative in adding new fields or modifying these!
         self.stop_forward = 220 # Threshold to initiate stopping
         self.go_forward = 275# Threshold to go forward again
-        self.max_vel = 1.5# Maximum velocity (meters/second)
-        self.frames_stop=0
+        self.max_vel = 1# Maximum velocity (meters/second)
+        self.frames_stop=0 # a variable to let the rover stabilize before doing action again
+        
+        #####################################################################################
+        self.mapped_percentage=0
         # Image output from perception step
         # Update this image to display your intermediate analysis steps
         # on screen in autonomous mode
@@ -104,9 +109,8 @@ def telemetry(sid, data):
         frame_counter = 0
         second_counter = time.time()
    # print("Current FPS: {}".format(fps))
-
-    if data:
-        global Rover
+        
+        
         # Initialize / update Rover with current telemetry
         Rover, image = update_rover(Rover, data)
 

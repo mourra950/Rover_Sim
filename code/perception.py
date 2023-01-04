@@ -206,8 +206,8 @@ def perception_step(Rover):
     #in case of finding of a rock
     if(angles_rock.any())  :
         #replace the nav angles and distance of navigable terrain to that of the rock 
-        angles=angles_rock
-        dist=dist_rock
+        Rover.navrock_angles=angles_rock
+        Rover.navrock_dists=dist_rock
         Rover.mode = 'Rock_in_sight'
     else:
     #if rock was in sight and now isnt turn mode back to forward
@@ -218,6 +218,6 @@ def perception_step(Rover):
     #used to take decision rock finding
     Rover.nav_angles= angles
     #used to take decision in keep going or stoping
-    Rover.nav1_angles= angles1
+    Rover.navstop_angles= angles1
 
     return Rover
