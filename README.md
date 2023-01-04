@@ -1,4 +1,5 @@
 # Rover NASA Mars Simulator
+![image](https://user-images.githubusercontent.com/64339763/210555583-9b79c7a9-0b8b-4dea-a49d-6ce408a31790.png)
 
 ## Project description
 
