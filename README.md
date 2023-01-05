@@ -51,11 +51,11 @@ in this file all image processing is done in here to extract any needed informat
 
 ### decision.py
 
-the file where all decision are taken and most of our Rover variables are changed to avoid obstacles or to collect rock or to move in navigable terrain and so on and so.
+the file where all decisions are taken and most of our Rover variables are changed to avoid obstacles or collect rock or move in navigable terrain and so on and so.
 
 ### supporting_functions.py
 
-supporting function is where data are decoded received from the Rover is and where data displayed on the screen is calculated either mapping percentage,fidality or timing.
+supporting function is where data are decoded and received from the Rover and where data displayed on the screen is calculated either mapping percentage, fidelity or timing.
 
 ## Rover class
 
@@ -93,11 +93,11 @@ The RoverState class is used to store the state of the rover. It has the followi
 
 ## Important concepts
 
-Image clipping : filtering image beyond a certain threshold or shape to ignore the data beyond the threshold or shape in this case it was important because the further the data was the less accurate it was not only that but also clipping was used to get specific regions which was important to some decision like stopping or steering.
+- `Image clipping` : filtering image beyond a certain threshold or shape to ignore the data beyond the threshold or shape in this case it was important because the further the data was the less accurate it was not only that but also clipping was used to get specific regions which were important to some decision like stopping or steering.
 
-Angles mean : the sum of all angles divided by their number used to get averages.
+- `Angles mean` : the sum of all angles divided by their number used to get averages.
 
-Erosion : erosion is one of two fundamental operations in morphological image processing from which all other morphological operations are based.in which the gaps gets wider and a part of the shape is decrease all around depending on the structural element used
+- `Erosion` : erosion is one of two fundamental operations in morphological image processing on which all other morphological operations are based. In which the gaps get wider and a part of the shape is decreased all around depending on the structural element used
 
 ## Usage
 
