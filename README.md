@@ -37,7 +37,24 @@ the Rover is divided into 4 main files
 * perception.py
 * decision.py
 * supporting_functions.py
-* 
+
+### drive_rover.py
+
+its the most important file its responsible to connect to the simulation using socketio and flask and many more things to work properly installing specified library version is important using the requirement.txt 
+
+### perception.py
+
+in this file all image processing is done in here to extract any needed information to base our Rover decision 
+
+### decision.py
+
+the file where all decision are taken and most of our Rover variables are changed to avoid obstacles or to collect rock or to move in navigable terrain and so on and so.
+
+### supporting_functions.py
+
+supporting function is where data are decoded received from the Rover is and where data Displayed on the screen is calculated either mapping percentage,fidality or timing.
+
+### Important variables
 
 ## Usage
 
