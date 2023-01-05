@@ -1,4 +1,5 @@
 # Rover NASA Mars Simulator
+
 ![image](https://user-images.githubusercontent.com/64339763/210555583-9b79c7a9-0b8b-4dea-a49d-6ce408a31790.png)
 
 ## Project description
@@ -32,15 +33,17 @@ For at least three decades, scientists have advocated the return of geological s
 As of late 1999, the MSR mission was anticipated to be launched from Earth in 2003 and 2005. Each was to deliver a rover and a Mars ascent vehicle, and a French-supplied Mars orbiter with Earth return capability was to be included in 2005. Sample containers orbited by both MAVs were to reach Earth in 2008. This mission concept, considered by NASA's Mars Exploration Program to return samples by 2008, was canceled following a program review
 
 ## Code overview
+
 the Rover is divided into 4 main files
-* drive_rover.py
-* perception.py
-* decision.py
-* supporting_functions.py
+
+- drive_rover.py
+- perception.py
+- decision.py
+- supporting_functions.py
 
 ### drive_rover.py
 
-its the most important file its responsible to connect to the simulation using socketio and flask and many more things to work properly installing specified library version is important using the requirement.txt 
+its the most important file its responsible to connect to the simulation using socketio and flask and many more things to work properly installing specified library version is important using the requirement.txt
 
 ### perception.py
 
@@ -55,37 +58,39 @@ the file where all decision are taken and most of our Rover variables are change
 supporting function is where data are decoded received from the Rover is and where data displayed on the screen is calculated either mapping percentage,fidality or timing.
 
 ## Rover class
+
 The RoverState class is used to store the state of the rover. It has the following attributes:
 
-start_time: a datetime object that stores the start time of navigation.
-total_time: a datetime object that stores the total duration of navigation.
-img: a NumPy array that stores the current camera image.
-pos: a tuple of two floats that stores the current position (x, y) of the rover.
-yaw: a float that stores the current yaw angle of the rover.
-pitch: a float that stores the current pitch angle of the rover.
-roll: a float that stores the current roll angle of the rover.
-vel: a float that stores the current velocity of the rover.
-steer: a float that stores the current steering angle of the rover.
-throttle: a float that stores the current throttle value of the rover.
-brake: a float that stores the current brake value of the rover.
-nav_angles: a NumPy array that stores the angles of navigable terrain pixels.
-navstop_angles: a NumPy array that appears to be unused.
-navrock_angles: a NumPy array that appears to be unused.
-navrock_dists: a NumPy array that appears to be unused.
-nav_dists: a NumPy array that stores the distances of navigable terrain pixels.
-ground_truth: a 3D NumPy array that stores the ground truth worldmap.
-mode: a string that stores the current mode of the rover, either "forward" or "stop".
-throttle_set: a float that stores the throttle setting when accelerating.
-brake_set: a float that stores the brake setting when braking.
-stop_forward: an integer that stores the threshold to initiate stopping.
-go_forward: an integer that stores the threshold to go forward again.
-max_vel: a float that stores the maximum velocity (meters/second) of the rover.
-frames_stop: an integer that appears to be used to let the rover stabilize before doing an action again.
-home_return_flag: an integer that appears to be unused.
-initpoint: a tuple that appears to be unused.
-mapped_percentage: a float that appears to be unused.
-vision_image: a 3D NumPy array that stores the image output from the perception step, to be displayed on the server.
-worldmap: a 3D NumPy array that stores the worldmap, with positions of navigable terrain, obstacles, and rock samples.
+- `start_time`: a datetime object that stores the start time of navigation.
+- `total_time`: a datetime object that stores the total duration of navigation.
+- `img`: a NumPy array that stores the current camera image.
+- `pos`: a tuple of two floats that stores the current position (x, y) of the rover.
+- `yaw`: a float that stores the current yaw angle of the rover.
+- `pitch`: a float that stores the current pitch angle of the rover.
+- `roll`: a float that stores the current roll angle of the rover.
+- `vel`: a float that stores the current velocity of the rover.
+- `steer`: a float that stores the current steering angle of the rover.
+- `throttle`: a float that stores the current throttle value of the rover.
+- `brake`: a float that stores the current brake value of the rover.
+- `nav_angles`: a NumPy array that stores the angles of navigable terrain pixels.
+- `navstop_angles`: a NumPy array that is used to check if is enough space available to move or not to decide whether to stop or not.
+- `navrock_angles`: a NumPy array that store the angles of the rock
+- `navrock_dists`: a NumPy array that store the lists of every pix of the rock from the rover.
+- `nav_dists`: a NumPy array that stores the distances of navigable terrain pixels.
+- `ground_truth`: a 3D NumPy array that stores the ground truth worldmap.
+- `mode`: a string that stores the current mode of the rover, either "forward" or "stop" or "Rock_in_sight".
+- `throttle_set`: a float that stores the throttle setting when accelerating.
+- `brake_set`: a float that stores the brake setting when braking.
+- `stop_forward`: an integer that stores the threshold to initiate stopping.
+- `go_forward`: an integer that stores the threshold to go forward again.
+- `max_vel`: a float that stores the maximum velocity (meters/second) of the rover.
+- `frames_stop`: an integer that is used to let the rover stabilize before doing an action again.
+- `home_return_flag`: a flag that is used to signal for the Rover to stop when he returns home when conditions are met.
+- `initpoint`: a tuple that store the initial position.
+- `mapped_percentage`: a float that store the percentage of the map mapped.
+- `vision_image`: a 3D NumPy array that stores the image output from the perception step, to be displayed on the server.
+- `worldmap`: a 3D NumPy array that stores the worldmap, with positions of navigable terrain, obstacles, and rock samples.
+
 ## Important concepts
 
 Image clipping : filtering image beyond a certain threshold or shape to ignore the data beyond the threshold or shape in this case it was important because the further the data was the less accurate it was not only that but also clipping was used to get specific regions which was important to some decision like stopping or steering.
@@ -93,9 +98,6 @@ Image clipping : filtering image beyond a certain threshold or shape to ignore t
 Angles mean : the sum of all angles divided by their number used to get averages.
 
 Erosion : erosion is one of two fundamental operations in morphological image processing from which all other morphological operations are based.in which the gaps gets wider and a part of the shape is decrease all around depending on the structural element used
-
-
-
 
 ## Usage
 
