@@ -44,14 +44,29 @@ the Rover is divided into 4 main files
 ### drive_rover.py
 
 its the most important file its responsible to connect to the simulation using socketio and flask and many more things to work properly installing specified library version is important using the requirement.txt
+```ssh
+python-engineio==3.13.2
+python-socketio==4.6.1
+```
+![image](https://user-images.githubusercontent.com/64339763/211030981-f9e56cd8-45f3-425f-8673-cd954273c8b9.png)
 
 ### perception.py
 
 in this file all image processing is done in here to extract any needed information to base our Rover decision.
 
+
+![vision example](https://user-images.githubusercontent.com/64339763/211030581-f8635bee-6163-4f69-91d1-04f2d542fb10.png)
+
 ### decision.py
 
 the file where all decisions are taken and most of our Rover variables are changed to avoid obstacles or collect rock or move in navigable terrain and so on and so.
+
+there is 4 modes:
+
+- `forward` : if navigable terrain looks good this mode is used to steer and regulate the rover speed during runtime
+- `stop` :  if navigable terrain looks bad this mode is used to stop then  steer rover until enough terrain is found for the rover to roam again
+- `rock` :  in case a rock is found the rover start steering toward the rock with putting in mind the terrain to avoid any collisions
+- `pick` :  if near enough a rock and in position to pick it movment is disabled and the rock is picked
 
 ### supporting_functions.py
 
