@@ -109,6 +109,7 @@ The RoverState class is used to store the state of the rover. It has the followi
 ## Important concepts
 
 - `Image clipping` : filtering image beyond a certain threshold or shape to ignore the data beyond the threshold or shape in this case it was important because the further the data was the less accurate it was not only that but also clipping was used to get specific regions which were important to some decision like stopping or steering.
+Note: our clipping started as a simple line then transform it to circular due to how vision works if you looking right in front of yourself the field vision pretty in comparison to extreme field of views angles extreme right or left i mean.
 
 - `Angles mean` : the sum of all angles divided by their number used to get averages.
 
