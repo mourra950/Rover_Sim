@@ -66,7 +66,7 @@ class RoverState():
         # get creative in adding new fields or modifying these!
         self.stop_forward = 220 # Threshold to initiate stopping
         self.go_forward = 275 # Threshold to go forward again
-        self.max_vel = 0.8 # Maximum velocity (meters/second)
+        self.max_vel = 1 # Maximum velocity (meters/second)
         self.frames_stop=0 # a variable to let the rover stabilize before doing action again
         self.home_return_flag=0
         self.initpoint=None
