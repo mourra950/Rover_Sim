@@ -1,6 +1,13 @@
 # Rover NASA Mars Simulator
 
-![image](https://user-images.githubusercontent.com/64339763/210555583-9b79c7a9-0b8b-4dea-a49d-6ce408a31790.png)
+press on the image to see a sample video
+<a href="link address">
+ 
+<img
+  src="https://user-images.githubusercontent.com/64339763/212496972-0666e1cc-345c-40c5-938d-ae062d9a0314.png"
+  width="1000"
+     >
+</a>
 
 ## Project description
 
