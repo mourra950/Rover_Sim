@@ -1,7 +1,7 @@
 # Rover NASA Mars Simulator
 
 
-<a href="https://www.youtube.com/watch?v=nr3JfPq8gJs" target="_blank">Google</a>
+<a href="https://www.youtube.com/watch?v=nr3JfPq8gJs" target="_blank">Sample video link</a>
 
 <img src="https://user-images.githubusercontent.com/64339763/212496972-0666e1cc-345c-40c5-938d-ae062d9a0314.png"
   width="900">
